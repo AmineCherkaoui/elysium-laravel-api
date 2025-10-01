@@ -27,4 +27,22 @@ class RegisterUserRequest extends FormRequest
                 'password' => 'required|string|min:8|confirmed',
             ];
     }
+
+     public function messages(): array
+    {
+        return [
+            'name.required' => 'Le nom est obligatoire.',
+            'name.max' => 'Le nom ne doit pas dépasser 255 caractères.',
+
+            'email.required' => 'L’adresse e-mail est obligatoire.',
+            'email.email' => 'L’adresse e-mail doit être une adresse e-mail valide.',
+            'email.max' => 'L’adresse e-mail ne doit pas dépasser 255 caractères.',
+            'email.unique' => 'Cette adresse e-mail est déjà utilisée.',
+
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.string' => 'Le mot de passe doit être une chaîne de caractères.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
+        ];
+    }
 }

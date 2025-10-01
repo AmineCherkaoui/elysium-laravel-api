@@ -17,9 +17,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ProductSeeder::class,
         ]);
-        // User::factory()->create([
-        //     'name' => 'Admin',
-        //     'email' => 'admin@elysium.ma',
-        // ]);
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@elysium.ma',
+        ]);
     }
 }

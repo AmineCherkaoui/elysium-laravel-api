@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
+use App\Models\Produit;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Enums\ProductCategory;
@@ -19,7 +21,17 @@ class ProductController extends Controller
     use ApiResponses;
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Produit::query();
+
+         if ($request->filled('ids')) {
+        $ids = explode(',', $request->query('ids'));
+        $products = $query->whereIn('id', $ids)->get();
+
+        return $this->success("Produits trouvés avec succès.", [
+            "products" => $products,
+        ]);
+    }
+
         $limit = $request->query('limit', 8);
 
 
@@ -42,7 +54,7 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->orderBy("created_at", "desc")->paginate($limit);
+        $products = $query->latest()->paginate($limit);
 
 
 
@@ -56,8 +68,7 @@ class ProductController extends Controller
      use ApiResponses;
     public function showBySlug(string $slug)
     {
-        $product = Product::where('slug', $slug)->first();
-          Log::info("/products/slug is hit");
+            $product = Produit::where('slug', $slug)->first();
 
         if (!$product) {
              return $this->error("Produit non trouvé.",404);
@@ -73,7 +84,7 @@ class ProductController extends Controller
         $validated = $request->validated();
 
         $slug = Str::slug($validated['nom']);
-        if (Product::where('slug', $slug)->exists()) {
+        if (Produit::where('slug', $slug)->exists()) {
             $slug .= '-'.time();
         }
 
@@ -85,7 +96,7 @@ class ProductController extends Controller
             $imageUrl = asset("storage/images/{$filename}");
         }
 
-        $product = Product::create([
+        $product = Produit::create([
             ...$validated,
             'slug' => $slug,
             'imageUrl' => $imageUrl,
@@ -98,9 +109,10 @@ class ProductController extends Controller
     }
 
     use ApiResponses;
-    public function update(StoreProductRequest $request, string $slug)
+    public function update(UpdateProductRequest $request, string $slug)
     {
-        $product = Product::where('slug', $slug)->first();
+
+                 $product = Produit::where('slug', $slug)->first();
 
         if (!$product) {
             return $this->error("Produit introuvable.",404);
@@ -108,10 +120,15 @@ class ProductController extends Controller
 
         $validated = $request->validated();
 
+        if (isset($validated['nom'])) {
         $newSlug = Str::slug($validated['nom']);
-        if ($newSlug !== $product->slug && Product::where('slug', $newSlug)->exists()) {
-            $newSlug .= '-'.time();
+        if ($newSlug !== $product->slug && Produit::where('slug', $newSlug)->exists()) {
+            $newSlug .= '-' . time();
         }
+    } else {
+        $newSlug = $product->slug;
+    }
+
 
         if ($request->hasFile('image')) {
             if ($product->imageUrl) {
@@ -139,7 +156,8 @@ class ProductController extends Controller
     use ApiResponses;
     public function destroy(string $slug)
     {
-        $product = Product::where('slug', $slug)->first();
+
+        $product = Produit::where('slug', $slug)->first();
 
         if (!$product) {
            return $this->error("Produit introuvable.",404);

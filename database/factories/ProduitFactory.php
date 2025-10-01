@@ -1,14 +1,14 @@
 <?php
 namespace Database\Factories;
 
+use App\Models\Produit;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use App\Models\Product;
 use App\Enums\ProductCategory;
 
-class ProductFactory extends Factory
+class ProduitFactory extends Factory
 {
-    protected $model = Product::class;
+    protected $model = Produit::class;
 
     public function definition(): array
     {
@@ -18,7 +18,7 @@ class ProductFactory extends Factory
             'slug'                   => $this->faker->unique()->slug,
             'fabricant'              => $this->faker->company,
             'description'            => $this->faker->paragraph,
-            'imageUrl'               => $this->faker->imageUrl(640, 480, 'tech', true),
+            'imageUrl'               => null,
             'resolutionX'            => $this->faker->randomElement([720, 1080, 1920, 3840]),
             'resolutionY'            => $this->faker->randomElement([480, 720, 1080, 2160]),
             'taillePouces'           => $this->faker->randomFloat(1, 10, 100),
