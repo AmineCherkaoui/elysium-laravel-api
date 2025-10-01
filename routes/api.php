@@ -52,7 +52,7 @@ Route::prefix('products')->group(function () {
 
 
 Route::prefix('commandes')->group(function () {
-    Route::post('/', [CommandeController::class, 'store']);
+    Route::post('/', [CommandeController::class, 'store'])->middleware('throttle:commande');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [CommandeController::class, 'index']);

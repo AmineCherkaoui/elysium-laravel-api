@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('login', function (Request $request) {
-            return Limit::perMinute(3)
+            return Limit::perMinute(5)
                 ->by( $request->ip())
                 ->response(function () {
                     return response()->json([
@@ -35,6 +35,16 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('contact', function (Request $request) {
             return Limit::perMinute(1)
+                ->by( $request->ip())
+                ->response(function () {
+                    return response()->json([
+                        'message' => 'Trop de tentatives. Réessayez dans une minute.'
+                    ], 429);
+                });
+        });
+
+           RateLimiter::for('commande', function (Request $request) {
+            return Limit::perMinute(3)
                 ->by( $request->ip())
                 ->response(function () {
                     return response()->json([
