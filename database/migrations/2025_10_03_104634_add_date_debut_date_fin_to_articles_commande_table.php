@@ -8,7 +8,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('articles_commande', function (Blueprint $table) {
-            $table->dateTime('y')->nullable()->after('prix_total');
+            $table->dateTime('date_debut')->nullable()->after('prix_total');
             $table->dateTime('date_fin')->nullable()->after('date_debut');
         });
     }
