@@ -20,6 +20,8 @@ class ArticleCommandeResource extends JsonResource
             'type' => $this->type,
             'prix_unitaire' => (float) $this->prix_unitaire,
             'prix_total' => (float) $this->prix_total,
+            'date_debut' => $this->date_debut ? $this->date_debut->toDateString() : null,
+            'date_fin' => $this->date_fin ? $this->date_fin->toDateString() : null,
             'produit' => $this->whenLoaded('produit', function () {
                 return [
                     'slug' => $this->produit->slug,

@@ -8,6 +8,7 @@ use App\Http\Resources\CommandeResource;
 use App\Models\Commande;
 use App\Models\Produit;
 use App\Traits\ApiResponses;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Log;
@@ -74,28 +75,42 @@ class CommandeController extends Controller
 
 
 
+
             foreach ($request->articles as $articleData) {
-                $produit = Produit::findOrFail($articleData['produit_id']);
-                $prixUnitaire = $produit->obtenirPrix($articleData['type']);
-                 if (!$prixUnitaire) {
-                    return $this->error("Prix non disponible pour le produit '{$produit->nom}' en {$articleData['type']}",400);
-                }
+    $produit = Produit::findOrFail($articleData['produit_id']);
+    $prixUnitaire = $produit->obtenirPrix($articleData['type']);
+
+    if (!$prixUnitaire) {
+        return $this->error("Prix non disponible pour le produit '{$produit->nom}' en {$articleData['type']}", 400);
+    }
 
 
+    $prixTotal = $prixUnitaire * $articleData['quantite'];
 
-                $prixTotal = $prixUnitaire * $articleData['quantite'];
-                $montantTotal += $prixTotal;
+    if ($articleData['type'] === 'location') {
+        $dateDebut = Carbon::parse($articleData['date_debut']);
+        $dateFin = Carbon::parse($articleData['date_fin']);
 
-                $article = $commande->articlesCommande()->create([
-                    'produit_id' => $articleData['produit_id'],
-                    'quantite' => $articleData['quantite'],
-                    'type' => $articleData['type'],
-                    'prix_unitaire' => $prixUnitaire,
-                    'prix_total' => $prixTotal,
-                ]);
 
-                $article->save();
-            }
+       $nombreJours = $dateFin->diffInDays($dateDebut,true) + 1;
+
+        $prixTotal *= $nombreJours;
+    }
+
+    $montantTotal += $prixTotal;
+
+    $commande->articlesCommande()->create([
+        'produit_id' => $articleData['produit_id'],
+        'quantite' => $articleData['quantite'],
+        'type' => $articleData['type'],
+        'prix_unitaire' => $prixUnitaire,
+        'prix_total' => $prixTotal,
+        'date_debut' => $articleData['date_debut'] ?? null,
+        'date_fin' => $articleData['date_fin'] ?? null,
+    ]);
+}
+
+
 
             $commande->update(['montant_total' => $montantTotal]);
 

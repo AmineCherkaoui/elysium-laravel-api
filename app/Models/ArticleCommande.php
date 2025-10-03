@@ -20,12 +20,16 @@ class ArticleCommande extends Model
         'type',
         'prix_unitaire',
         'prix_total',
+        'date_debut',
+        'date_fin',
     ];
 
     protected $casts = [
         'prix_unitaire' => 'decimal:2',
         'prix_total' => 'decimal:2',
         'quantite' => 'integer',
+          'date_debut' => 'datetime',
+    'date_fin' => 'datetime',
     ];
 
     public function commande()

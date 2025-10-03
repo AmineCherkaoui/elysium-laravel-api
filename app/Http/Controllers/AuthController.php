@@ -10,7 +10,6 @@ use Auth;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -40,7 +39,6 @@ class AuthController extends Controller
     public function login(LoginUserRequest $request)
     {
 
-            Log::info('auth login is hit ...');
             $credentials = $request->validated();
 
             if(!Auth::attempt($credentials)) {
@@ -62,7 +60,6 @@ class AuthController extends Controller
     use ApiResponses;
     public function logout(Request $request)
     {
-Log::info('auth logout is hit ...');
         $request->user()->currentAccessToken()->delete();
         return $this->success("Déconnexion réussie");
     }
@@ -71,7 +68,6 @@ Log::info('auth logout is hit ...');
       public function user(Request $request)
     {
 
-Log::info('auth user is hit ...');
        $user = $request->user();
 
         if (!$user) {
@@ -85,7 +81,6 @@ Log::info('auth user is hit ...');
 
 use ApiResponses;
     public function updateUser(UpdateUserRequest $request){
-        Log::info('auth update is hit ...');
     $user = $request->user();
      if (!$user) {
             return $this->error('Utilisateur non authentifié.', 401);

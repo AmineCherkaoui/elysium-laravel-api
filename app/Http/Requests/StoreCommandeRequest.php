@@ -31,6 +31,8 @@ class StoreCommandeRequest extends FormRequest
             'articles.*.produit_id' => 'required|uuid|exists:produits,id',
             'articles.*.quantite' => 'required|integer|min:1|max:100',
             'articles.*.type' => 'required|in:location,achat',
+            'articles.*.date_debut' => 'required_if:articles.*.type,location|date|after:today',
+            'articles.*.date_fin' => 'required_if:articles.*.type,location|date|after_or_equal:articles.*.date_debut',
         ];
     }
 
@@ -63,6 +65,11 @@ class StoreCommandeRequest extends FormRequest
 
             'articles.*.type.required' => 'Le type (location/achat) est requis.',
             'articles.*.type.in' => 'Le type doit être soit "location" soit "achat".',
+
+             'articles.*.date_debut.required_if' => 'La date de début est requise pour une location.',
+            'articles.*.date_debut.after' => 'La date de début doit être une date future.',
+            'articles.*.date_fin.required_if' => 'La date de fin est requise pour une location.',
+            'articles.*.date_fin.after' => 'La date de fin doit être postérieure à la date de début.',
         ];
     }
 }
